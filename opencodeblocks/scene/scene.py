@@ -190,24 +190,6 @@ class OCBScene(QGraphicsScene, Serializable):
         self.has_been_modified = False
         return super().clear()
 
-    def serialize(self) -> OrderedDict:
-        blocks = []
-        edges = []
-        for item in self.items():
-            if isinstance(item, OCBBlock):
-                blocks.append(item)
-            elif isinstance(item, OCBEdge):
-                edges.append(item)
-        blocks.sort(key=lambda x: x.id)
-        edges.sort(key=lambda x: x.id)
-        return OrderedDict(
-            [
-                ("id", self.id),
-                ("blocks", [block.serialize() for block in blocks]),
-                ("edges", [edge.serialize() for edge in edges]),
-            ]
-        )
-
     def create_graph(self) -> nx.DiGraph:
         """Create a networkx graph from the scene."""
         edges = []
@@ -253,13 +235,31 @@ class OCBScene(QGraphicsScene, Serializable):
             hashmap.update({data["id"]: block})
         return block
 
+    def serialize(self) -> OrderedDict:
+        blocks = []
+        edges = []
+        for item in self.items():
+            if isinstance(item, OCBBlock):
+                blocks.append(item)
+            elif isinstance(item, OCBEdge):
+                edges.append(item)
+        blocks.sort(key=lambda x: x.id)
+        edges.sort(key=lambda x: x.id)
+        return OrderedDict(
+            [
+                ("id", self.id),
+                ("blocks", [block.serialize() for block in blocks]),
+                ("edges", [edge.serialize() for edge in edges]),
+            ]
+        )
+
     def deserialize(
         self, data: OrderedDict, hashmap: dict = None, restore_id: bool = True
     ):
         self.clear()
         hashmap = hashmap if hashmap is not None else {}
-        if restore_id and 'id' in data:
-            self.id = data['id']
+        if restore_id and "id" in data:
+            self.id = data["id"]
 
         # Create blocks
         for block_data in data["blocks"]:
@@ -271,3 +271,5 @@ class OCBScene(QGraphicsScene, Serializable):
             edge.deserialize(edge_data, hashmap, restore_id)
             self.addItem(edge)
             hashmap.update({edge_data["id"]: edge})
+
+        # Restore view zoom and pos
