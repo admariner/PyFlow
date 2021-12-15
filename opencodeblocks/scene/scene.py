@@ -18,7 +18,7 @@ from opencodeblocks.core.serializable import Serializable
 from opencodeblocks.blocks.block import OCBBlock
 from opencodeblocks.graphics.edge import OCBEdge
 from opencodeblocks.scene.clipboard import SceneClipboard
-from opencodeblocks.scene.history import SceneHistory
+from opencodeblocks.scene.scene_history import SceneHistory
 from opencodeblocks.scene.from_ipynb_conversion import ipynb_to_ipyg
 from opencodeblocks.scene.to_ipynb_conversion import ipyg_to_ipynb
 

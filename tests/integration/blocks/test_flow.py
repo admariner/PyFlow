@@ -85,7 +85,7 @@ class TestExecutionFlow:
                 block_to_run.run_right()
 
             msgQueue.run_lambda(run_block)
-            time.sleep(0.5)
+            time.sleep(1)
 
             msgQueue.check_equal(block_output.stdout.strip(), "21")
             msgQueue.check_equal(block_to_not_run.stdout.strip(), "")

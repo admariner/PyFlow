@@ -399,13 +399,13 @@ class OCBWindow(QMainWindow):
         """Undo last operation if not in edit mode."""
         current_window = self.activeMdiChild()
         if self.is_not_editing(current_window):
-            current_window.scene.history.undo()
+            current_window.scene.scene_history.undo()
 
     def onEditRedo(self):
         """Redo last operation if not in edit mode."""
         current_window = self.activeMdiChild()
         if self.is_not_editing(current_window):
-            current_window.scene.history.redo()
+            current_window.scene.scene_history.redo()
 
     def onEditCut(self):
         """Cut the selected items if not in edit mode."""
