@@ -10,10 +10,12 @@ from PyQt5.QtGui import (
     QFont,
     QFontMetrics,
     QColor,
+    QKeyEvent,
     QMouseEvent,
     QWheelEvent,
 )
 from PyQt5.Qsci import QsciScintilla, QsciLexerPython
+from opencodeblocks.graphics.editor_history import EditorHistory
 from opencodeblocks.graphics.theme_manager import theme_manager
 
 from opencodeblocks.blocks.block import OCBBlock
@@ -44,6 +46,10 @@ class PythonEditor(QsciScintilla):
         self.block = block
         self.kernel = kernel
         self.threadpool = threadpool
+
+        self.history = EditorHistory(self)
+        self.pressingControl = False
+        # self.startOfSequencePos
 
         self.update_theme()
         theme_manager().themeChanged.connect(self.update_theme)
@@ -120,10 +126,36 @@ class PythonEditor(QsciScintilla):
         """PythonEditor reaction to PyQt mousePressEvent events."""
         if event.buttons() & Qt.MouseButton.LeftButton:
             self.mode = "EDITING"
-        return super().mousePressEvent(event)
+
+        super().mousePressEvent(event)
+        self.history.end_sequence()
 
     def focusOutEvent(self, event: QFocusEvent):
         """PythonEditor reaction to PyQt focusOut events."""
+        self.history.end_sequence()
         self.mode = "NOOP"
         self.block.source = self.text()
         return super().focusOutEvent(event)
+
+    def keyPressEvent(self, e: QKeyEvent) -> None:
+        # Disable QsciScintilla undo
+        self.SendScintilla(QsciScintilla.SCI_EMPTYUNDOBUFFER, 1)
+
+        # Manualy check if Ctrl+Z or Ctrl+Y is pressed
+        if self.pressingControl and e.key() == Qt.Key.Key_Z:
+            # The sequence ends and a new one starts when pressing Ctrl+Z
+            self.history.end_sequence()
+            self.history.start_sequence()
+            self.history.undo()
+        elif self.pressingControl and e.key() == Qt.Key.Key_Y:
+            self.history.redo()
+        elif e.key() == Qt.Key.Key_Control:
+            self.pressingControl = True
+        else:
+            self.pressingControl = False
+            self.history.start_sequence()
+
+        if e.key() in {Qt.Key.Key_Return, Qt.Key.Key_Enter}:
+            self.history.end_sequence()
+
+        super().keyPressEvent(e)
