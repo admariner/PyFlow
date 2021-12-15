@@ -138,6 +138,8 @@ class PythonEditor(QsciScintilla):
         return super().focusOutEvent(event)
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
+        """PythonEditor reaction to PyQt keyPressed events."""
+
         # Disable QsciScintilla undo
         self.SendScintilla(QsciScintilla.SCI_EMPTYUNDOBUFFER, 1)
 

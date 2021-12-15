@@ -65,4 +65,4 @@ class History:
         Contains the behavior to be adopted when a state is restored
         """
         # data: Any = self.restored_data()
-        pass
+        return

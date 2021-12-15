@@ -3,7 +3,7 @@
 
 """ Module for the handling an OCBScene history. """
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from opencodeblocks.core.history import History
 

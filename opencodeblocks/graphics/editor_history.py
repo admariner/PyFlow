@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 
 
 class EditorHistory(History):
-    """Helper object to handle undo/redo operations on a PythonEditor.
+    """
+    Helper object to handle undo/redo operations on a PythonEditor.
 
     Args:
         editor: PythonEditor reference.
@@ -27,7 +28,7 @@ class EditorHistory(History):
 
     def start_sequence(self):
         """
-        Start a new writing sequence if it was not already the case, and save the current state
+        Start a new writing sequence if it was not already the case, and save the current state.
         """
         if not self.is_writing:
             self.is_writing = True
@@ -35,13 +36,17 @@ class EditorHistory(History):
 
     def end_sequence(self):
         """
-        End the writing sequence if it was not already the case
-        Do not save at this point because the writing parameters to be saved (cursor pos, etc) are the one of the beginning of the next sequence
+        End the writing sequence if it was not already the case.
+        Do not save at this point because the writing parameters to be saved (cursor pos, etc) 
+        are the one of the beginning of the next sequence.
         """
         self.is_writing = False
 
     def checkpoint(self):
-        """Store a snapshot of the editor's text and parameters in the history stack if the text has changed."""
+        """
+        Store a snapshot of the editor's text and parameters in the history stack 
+        (only if the text has changed).
+        """
         text: str = self.editor.text()
         old_data = self.restored_data()
         if old_data is not None and old_data["text"] == text:
@@ -58,7 +63,10 @@ class EditorHistory(History):
         )
 
     def restore(self):
-        """Restore the editor's text and parameters using the snapshot pointed by current in the history stack."""
+        """
+        Restore the editor's text and parameters 
+        using the snapshot pointed by current in the history stack.
+        """
         data: Optional[OrderedDict] = self.restored_data()
 
         if data is not None:
