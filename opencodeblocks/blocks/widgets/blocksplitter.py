@@ -14,7 +14,7 @@ class OCBSplitterHandle(QSplitterHandle):
         """When releasing the handle, save the state to history"""
         scene = self.parent().block.scene()
         if scene is not None:
-            scene.scene_history.checkpoint("Resize block", set_modified=True)
+            scene.history.checkpoint("Resize block", set_modified=True)
         return super().mouseReleaseEvent(evt)
 
 

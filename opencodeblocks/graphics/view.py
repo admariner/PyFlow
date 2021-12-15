@@ -352,7 +352,7 @@ class OCBView(QGraphicsView):
         scene = self.scene()
         for selected_item in scene.selectedItems():
             selected_item.remove()
-        scene.scene_history.checkpoint("Delete selected elements", set_modified=True)
+        scene.history.checkpoint("Delete selected elements", set_modified=True)
 
     def bring_block_forward(self, block: OCBBlock):
         """Move the selected block in front of other blocks.
@@ -423,7 +423,7 @@ class OCBView(QGraphicsView):
                     and item_at_click.socket_type != "output"
                 ):
                     self.edge_drag.destination_socket = item_at_click
-                    scene.scene_history.checkpoint(
+                    scene.history.checkpoint(
                         "Created edge by dragging", set_modified=True
                     )
                 else:
