@@ -15,7 +15,7 @@ from PyQt5.QtGui import (
     QWheelEvent,
 )
 from PyQt5.Qsci import QsciScintilla, QsciLexerPython
-from opencodeblocks.graphics.editor_history import EditorHistory
+from opencodeblocks.graphics.pyeditor.history import EditorHistory
 from opencodeblocks.graphics.theme_manager import theme_manager
 
 from opencodeblocks.blocks.block import OCBBlock
