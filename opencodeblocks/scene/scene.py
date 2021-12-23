@@ -5,24 +5,23 @@
 
 import math
 import json
+from os import path
 from types import FunctionType, ModuleType
 from typing import List, OrderedDict, Union
 
-from PyQt5.QtCore import QLine, QRectF
+from PyQt5.QtCore import QLine, QRectF, QThreadPool
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QGraphicsScene
-
-from opencodeblocks import blocks
 
 from opencodeblocks.core.serializable import Serializable
 from opencodeblocks.blocks.block import OCBBlock
 from opencodeblocks.graphics.edge import OCBEdge
 from opencodeblocks.scene.clipboard import SceneClipboard
 from opencodeblocks.scene.history import SceneHistory
+from opencodeblocks.graphics.kernel import Kernel
 from opencodeblocks.scene.from_ipynb_conversion import ipynb_to_ipyg
 from opencodeblocks.scene.to_ipynb_conversion import ipyg_to_ipynb
-
-import networkx as nx
+from opencodeblocks import blocks
 
 
 class OCBScene(QGraphicsScene, Serializable):
@@ -58,6 +57,9 @@ class OCBScene(QGraphicsScene, Serializable):
 
         self.history = SceneHistory(self)
         self.clipboard = SceneClipboard(self)
+
+        self.kernel = Kernel()
+        self.threadpool = QThreadPool()
 
     @property
     def has_been_modified(self):
@@ -176,8 +178,15 @@ class OCBScene(QGraphicsScene, Serializable):
         self.history.checkpoint("Loaded scene")
         self.has_been_modified = False
 
+        # Add filepath to kernel path
+        dir_path = repr(path.abspath(path.dirname(filepath)))
+        setup_path_code = f'__import__("os").chdir({dir_path})'
+        self.kernel.execute(setup_path_code)
+
     def load_from_json(self, filepath: str) -> OrderedDict:
-        """Load the json data into an ordered dict
+        """
+        Load the json data into an ordered dict
+
         Args:
             filepath: Path to the file to load.
         """
@@ -191,6 +200,7 @@ class OCBScene(QGraphicsScene, Serializable):
         return super().clear()
 
     def serialize(self) -> OrderedDict:
+        """Serialize the scene into a dict."""
         blocks = []
         edges = []
         for item in self.items():
@@ -207,17 +217,6 @@ class OCBScene(QGraphicsScene, Serializable):
                 ("edges", [edge.serialize() for edge in edges]),
             ]
         )
-
-    def create_graph(self) -> nx.DiGraph:
-        """Create a networkx graph from the scene."""
-        edges = []
-        for item in self.items():
-            if isinstance(item, OCBEdge):
-                edges.append(item)
-        graph = nx.DiGraph()
-        for edge in edges:
-            graph.add_edge(edge.source_socket.block, edge.destination_socket.block)
-        return graph
 
     def create_block_from_file(self, filepath: str, x: float = 0, y: float = 0):
         """Create a new block from a .ocbb file"""
@@ -258,8 +257,8 @@ class OCBScene(QGraphicsScene, Serializable):
     ):
         self.clear()
         hashmap = hashmap if hashmap is not None else {}
-        if restore_id and 'id' in data:
-            self.id = data['id']
+        if restore_id and "id" in data:
+            self.id = data["id"]
 
         # Create blocks
         for block_data in data["blocks"]:

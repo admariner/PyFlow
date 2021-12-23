@@ -45,7 +45,6 @@ class OCBBlock(QGraphicsItem, Serializable):
     def __init__(
         self,
         block_type: str = "base",
-        source: str = "",
         position: tuple = (0, 0),
         width: int = DEFAULT_DATA["width"],
         height: int = DEFAULT_DATA["height"],
@@ -57,7 +56,6 @@ class OCBBlock(QGraphicsItem, Serializable):
 
         Args:
             block_type: Block type.
-            source: Block source text.
             position: Block position in the scene.
             width: Block width.
             height: Block height.
@@ -70,8 +68,6 @@ class OCBBlock(QGraphicsItem, Serializable):
         Serializable.__init__(self)
 
         self.block_type = block_type
-        self.source = source
-        self.stdout = ""
         self.setPos(QPointF(*position))
         self.sockets_in = []
         self.sockets_out = []
@@ -162,8 +158,7 @@ class OCBBlock(QGraphicsItem, Serializable):
             y = y_offset
         else:
             side_lenght = self.height - y_offset - 2 * socket.radius - self.edge_size
-            y = y_offset + side_lenght * \
-                sockets.index(socket) / (len(sockets) - 1)
+            y = y_offset + side_lenght * sockets.index(socket) / (len(sockets) - 1)
         return x, y
 
     def update_sockets(self):
