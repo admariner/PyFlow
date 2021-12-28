@@ -30,9 +30,8 @@ class TestCodeBlocks:
         ]
         self.blocks_to_run = [None] * 5
         for item in self.ocb_widget.scene.items():
-            if isinstance(item, OCBCodeBlock):
-                if item.title in self.titles:
-                    self.blocks_to_run[self.titles.index(item.title)] = item
+            if isinstance(item, OCBCodeBlock) and item.title in self.titles:
+                self.blocks_to_run[self.titles.index(item.title)] = item
 
     def test_duplicated_run(self):
         """Don't run a block twice when the execution flows"""

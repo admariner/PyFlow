@@ -58,7 +58,7 @@ class SceneHistory:
 
         """
         if self.current + 1 < len(self.history_stack):
-            self.history_stack = self.history_stack[0 : self.current + 1]
+            self.history_stack = self.history_stack[:self.current + 1]
 
         self.history_stack.append(data)
 

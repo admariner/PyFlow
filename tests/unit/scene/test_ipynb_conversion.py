@@ -76,14 +76,15 @@ def check_conversion_coherence(ipynb_data: OrderedDict, ipyg_data: OrderedDict):
     check.equal("blocks" in ipyg_data and "edges" in ipyg_data, True)
 
     # the amount of code blocks and edges is right
-    code_blocks_in_ipynb: int = 0
-    for cell in ipynb_data["cells"]:
-        if cell["cell_type"] == "code":
-            code_blocks_in_ipynb += 1
-    code_blocks_in_ipyg: int = 0
-    for block in ipyg_data["blocks"]:
-        if block["block_type"] == BLOCK_TYPE_TO_NAME["code"]:
-            code_blocks_in_ipyg += 1
+    code_blocks_in_ipynb: int = sum(
+        cell["cell_type"] == "code" for cell in ipynb_data["cells"]
+    )
+
+    code_blocks_in_ipyg: int = sum(
+        block["block_type"] == BLOCK_TYPE_TO_NAME["code"]
+        for block in ipyg_data["blocks"]
+    )
+
     check.equal(code_blocks_in_ipyg, code_blocks_in_ipynb)
 
     # blocks and sockets have unique ids

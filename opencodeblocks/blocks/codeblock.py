@@ -269,7 +269,7 @@ class OCBCodeBlock(OCBExecutableBlock):
         # If there is a new line
         # Save every line but the last one
 
-        if value.find("\n") != -1:
+        if "\n" in value:
             lines = value.split("\n")
             self._cached_stdout += "\n".join(lines[:-1]) + "\n"
             value = lines[-1]

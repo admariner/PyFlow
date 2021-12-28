@@ -168,7 +168,7 @@ class OCBView(QGraphicsView):
 
         code_blocks: List[OCBBlock] = [i for i in items if isinstance(i, OCBBlock)]
 
-        if len(code_blocks) == 0:
+        if not code_blocks:
             return False
 
         # Get the blocks with min and max x and y coordinates
@@ -286,14 +286,17 @@ class OCBView(QGraphicsView):
     def keyPressEvent(self, event: QKeyEvent):
         """OCBView reaction to a key being pressed"""
         key_id = event.key()
-        if key_id in [
-            Qt.Key.Key_Up,
-            Qt.Key.Key_Down,
-            Qt.Key.Key_Left,
-            Qt.Key.Key_Right,
-        ]:
-            if self.moveViewOnArrow(event):
-                return
+        if (
+            key_id
+            in [
+                Qt.Key.Key_Up,
+                Qt.Key.Key_Down,
+                Qt.Key.Key_Left,
+                Qt.Key.Key_Right,
+            ]
+            and self.moveViewOnArrow(event)
+        ):
+            return
 
         super().keyPressEvent(event)
 
@@ -323,9 +326,10 @@ class OCBView(QGraphicsView):
         event.setAccepted(True)
 
         menu = QMenu(self)
-        actionPool = []
-        for filepath, block_name in self.retreiveBlockTypes():
-            actionPool.append((filepath, menu.addAction(block_name)))
+        actionPool = [
+            (filepath, menu.addAction(block_name))
+            for filepath, block_name in self.retreiveBlockTypes()
+        ]
 
         selectedAction = menu.exec_(self.mapToGlobal(event.pos()))
         for filepath, action in actionPool:

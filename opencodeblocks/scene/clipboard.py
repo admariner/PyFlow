@@ -117,8 +117,7 @@ class SceneClipboard:
             if set_selected:
                 edge.setSelected(True)
             self.scene.addItem(edge)
-            hashmap.update({edge_data["id"]: edge})
-
+            hashmap[edge_data["id"]] = edge
         self.scene.history.checkpoint(
             "Desiralized elements into scene", set_modified=True
         )

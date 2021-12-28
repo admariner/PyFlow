@@ -54,8 +54,7 @@ class OCBSliderBlock(OCBExecutableBlock):
     @property
     def source(self):
         """The "source code" of the slider i.e an assignement to the value of the slider"""
-        python_code = f"{self.var_name} = {self.value}"
-        return python_code
+        return f"{self.var_name} = {self.value}"
 
     @source.setter
     def source(self, value: str):

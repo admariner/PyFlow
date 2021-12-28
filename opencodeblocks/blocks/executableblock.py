@@ -55,17 +55,11 @@ class OCBExecutableBlock(OCBBlock):
 
     def has_input(self) -> bool:
         """Checks whether a block has connected input blocks"""
-        for input_socket in self.sockets_in:
-            if len(input_socket.edges) != 0:
-                return True
-        return False
+        return any(len(input_socket.edges) != 0 for input_socket in self.sockets_in)
 
     def has_output(self) -> bool:
         """Checks whether a block has connected output blocks"""
-        for output_socket in self.sockets_out:
-            if len(output_socket.edges) != 0:
-                return True
-        return False
+        return any(len(output_socket.edges) != 0 for output_socket in self.sockets_out)
 
     def run_code(self):
         """Run the code in the block"""
@@ -117,12 +111,12 @@ class OCBExecutableBlock(OCBBlock):
         """
         for elem in self.transmitting_queue[0]:
             # Reset color only if the block will not be run
-            if hasattr(elem, "has_been_run"):
-                if elem.has_been_run is True:
-                    elem.run_color = 0
-            else:
+            if (
+                hasattr(elem, "has_been_run")
+                and elem.has_been_run is True
+                or not hasattr(elem, "has_been_run")
+            ):
                 elem.run_color = 0
-
         QApplication.processEvents()
         self.transmitting_queue.pop(0)
         if len(self.transmitting_queue) != 0:
@@ -150,7 +144,7 @@ class OCBExecutableBlock(OCBBlock):
         to_transmit = [[start_node]]
 
         to_visit = [start_node]
-        while len(to_visit) != 0:
+        while to_visit:
             # Remove duplicates
             to_visit = list(set(to_visit))
 
@@ -205,7 +199,7 @@ class OCBExecutableBlock(OCBBlock):
         next_edges = []
         next_blocks = []
 
-        while len(to_visit_input) != 0 or len(to_visit_output) != 0:
+        while to_visit_input or to_visit_output:
             for block in to_visit_input.copy():
                 # Check input edges and blocks
                 for input_socket in block.sockets_in:
