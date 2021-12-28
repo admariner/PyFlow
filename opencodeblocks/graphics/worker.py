@@ -34,7 +34,7 @@ class Worker(QRunnable):
         self.kernel.client.execute(self.code)
         done = False
         # While the kernel sends messages
-        while done is False:
+        while not done:
             # Save kernel message and send it to the GUI
             output, output_type, done = self.kernel.update_output()
             if done is False:

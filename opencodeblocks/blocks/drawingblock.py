@@ -124,8 +124,7 @@ class OCBDrawingBlock(OCBExecutableBlock):
     @property
     def source(self):
         """The "source code" of the drawingblock i.e an assignement to the drawing buffer"""
-        python_code = f"{self.var_name} = {repr(self.draw_area.color_buffer)}"
-        return python_code
+        return f"{self.var_name} = {repr(self.draw_area.color_buffer)}"
 
     @source.setter
     def source(self, value: str):

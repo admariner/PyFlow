@@ -238,9 +238,10 @@ class OCBScene(QGraphicsScene, Serializable):
 
         for block_name in block_files:
             block_module = getattr(blocks, block_name)
-            if isinstance(block_module, ModuleType):
-                if hasattr(block_module, data["block_type"]):
-                    block_constructor = getattr(blocks, data["block_type"])
+            if isinstance(block_module, ModuleType) and hasattr(
+                block_module, data["block_type"]
+            ):
+                block_constructor = getattr(blocks, data["block_type"])
 
         if block_constructor is None:
             raise NotImplementedError(f"{data['block_type']} is not a known block type")
@@ -249,7 +250,7 @@ class OCBScene(QGraphicsScene, Serializable):
         block.deserialize(data, hashmap, restore_id)
         self.addItem(block)
         if hashmap is not None:
-            hashmap.update({data["id"]: block})
+            hashmap[data["id"]] = block
         return block
 
     def deserialize(
@@ -269,4 +270,4 @@ class OCBScene(QGraphicsScene, Serializable):
             edge = OCBEdge()
             edge.deserialize(edge_data, hashmap, restore_id)
             self.addItem(edge)
-            hashmap.update({edge_data["id"]: edge})
+            hashmap[edge_data["id"]] = edge

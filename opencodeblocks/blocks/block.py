@@ -321,6 +321,5 @@ class OCBBlock(QGraphicsItem, Serializable):
                 socket.deserialize(socket_data, hashmap, restore_id)
                 self.add_socket(socket)
                 if hashmap is not None:
-                    hashmap.update({socket_data["id"]: socket})
-
+                    hashmap[socket_data["id"]] = socket
         self.update_all()

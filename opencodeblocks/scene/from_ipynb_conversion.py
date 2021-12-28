@@ -44,7 +44,7 @@ def get_blocks_data(
         font.setFixedPitch(True)
         font.setPointSize(POINT_SIZE)
         fontmetrics = QFontMetrics(font)
-    
+
     blocks_data: List[OrderedDict] = []
 
     next_block_x_pos: float = 0
@@ -52,31 +52,25 @@ def get_blocks_data(
     next_block_id = 0
 
     for cell in data["cells"]:
-        if "cell_type" not in cell or cell["cell_type"] not in ["code", "markdown"]:
-            pass
-        else:
+        if "cell_type" in cell and cell["cell_type"] in ["code", "markdown"]:
             block_type: str = cell["cell_type"]
 
             text: str = cell["source"]
-            
+
             boundingWidth = 10
             if use_theme_font:
                 boundingWidth = fontmetrics.boundingRect(line).width()
 
-            text_width: float = (
-                max(boundingWidth for line in text)
-                if len(text) > 0
-                else 0
-            )
+            text_width: float = max(boundingWidth for line in text) if text != '' else 0
             block_width: float = max(text_width + MARGIN_X, BLOCK_MIN_WIDTH)
-            
+
             lineSpacing = 2
             lineWidth = 10
 
             if use_theme_font:
                 lineSpacing = fontmetrics.lineSpacing()
                 lineWidth = fontmetrics.lineWidth()
-            
+
             text_height: float = len(text) * (
                 lineSpacing + lineWidth
             )
@@ -99,18 +93,14 @@ def get_blocks_data(
                 next_block_y_pos = 0
                 next_block_x_pos += block_width + MARGIN_BETWEEN_BLOCKS_X
 
-                if len(blocks_data) > 0 and is_title(blocks_data[-1]):
+                if blocks_data and is_title(blocks_data[-1]):
                     block_title: OrderedDict = blocks_data.pop()
                     block_data["title"] = block_title["text"]
 
                     # Revert position effect of the markdown block
                     block_data["position"] = block_title["position"]
             elif block_type == "markdown":
-                block_data.update(
-                    {
-                        "text": "".join(text),
-                    }
-                )
+                block_data["text"] = "".join(text)
                 next_block_y_pos += block_height + MARGIN_BETWEEN_BLOCKS_Y
 
             blocks_data.append(block_data)
@@ -166,10 +156,7 @@ def get_edges_data(blocks_data: OrderedDict) -> OrderedDict:
     ]
     edges_data: List[OrderedDict] = []
 
-    greatest_block_id: int = 0
-    if len(blocks_data) > 0:
-        greatest_block_id = blocks_data[-1]["id"]
-
+    greatest_block_id: int = blocks_data[-1]["id"] if len(blocks_data) > 0 else 0
     for i in range(1, len(code_blocks)):
         socket_id_out = greatest_block_id + 2 * i + 2
         socket_id_in = greatest_block_id + 2 * i + 1

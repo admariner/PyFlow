@@ -468,9 +468,7 @@ class OCBWindow(QMainWindow):
 
         if answer == QMessageBox.StandardButton.Save:
             return self.onFileSave()
-        if answer == QMessageBox.StandardButton.Discard:
-            return True
-        return False
+        return answer == QMessageBox.StandardButton.Discard
 
     def activeMdiChild(self) -> OCBWidget:
         """Get the active OCBWidget if existing."""
